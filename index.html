@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Χριστουγεννιάτικο Κόντρα Πλακέ</title>
+    <style>
+        :root {
+            --bg-color: #0d2b1f; /* Dark Green */
+            --board-bg: #1a4d36;
+            --text-color: #ffffff;
+            --accent-gold: #ffd700;
+            --team1-color: #e63946; /* Red */
+            --team2-color: #457b9d; /* Blue */
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+        h1 {
+            color: var(--accent-gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        #controls {
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        #question-container {
+            font-size: 2em;
+            margin: 20px 0;
+            min-height: 80px;
+            font-weight: bold;
+        }
+        #board {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .answer-row {
+            display: flex;
+            width: 80%;
+            max-width: 800px;
+            height: 60px;
+            background-color: var(--board-bg);
+            border: 3px solid var(--accent-gold);
+            border-radius: 10px;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+        .answer-row:hover {
+            transform: scale(1.02);
+        }
+        .number-box {
+            background-color: var(--accent-gold);
+            color: var(--bg-color);
+            width: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        .text-box {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 1.5em;
+            text-transform: uppercase;
+        }
+        .points-box {
+            width: 80px;
+            border-left: 2px solid var(--accent-gold);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            background-color: rgba(0,0,0,0.2);
+        }
+        .hidden-content .text-box, .hidden-content .points-box {
+            opacity: 0;
+        }
+        .hidden-content {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--board-bg),
+                var(--board-bg) 10px,
+                #133d2a 10px,
+                #133d2a 20px
+            );
+        }
+        #teams-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+        .team-box {
+            padding: 20px 40px;
+            font-size: 2em;
+            border-radius: 15px;
+            border: 4px solid transparent;
+            opacity: 0.5;
+            transition: all 0.3s;
+        }
+        #team1 { background-color: var(--team1-color); }
+        #team2 { background-color: var(--team2-color); }
+        .team-active {
+            opacity: 1 !important;
+            border-color: var(--accent-gold) !important;
+            box-shadow: 0 0 30px var(--accent-gold);
+            transform: scale(1.1);
+        }
+        .strike-marks {
+            display: block;
+            min-height: 30px;
+            margin-top: 8px;
+            color: red;
+            font-size: 0.8em;
+            letter-spacing: 8px;
+        }
+        #strike-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15em;
+            color: red;
+            font-weight: bold;
+            text-shadow: 5px 5px 0 #000;
+            display: none;
+            z-index: 1000;
+        }
+        .info-text {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        #scoreboard {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 10px 0;
+        }
+        .score-box {
+            min-width: 220px;
+            padding: 10px 20px;
+            border: 2px solid var(--accent-gold);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.25);
+        }
+        #mini-scoreboard {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 10px;
+            font-size: 0.85em;
+            z-index: 500;
+            opacity: 0.85;
+            transition: opacity 0.2s;
+        }
+        #mini-scoreboard:hover {
+            opacity: 1;
+        }
+        #mini-scoreboard .mini-score-box {
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.45);
+            border: 1px solid var(--accent-gold);
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+        #mini-scoreboard .mini-score-box.team1 { border-color: var(--team1-color); }
+        #mini-scoreboard .mini-score-box.team2 { border-color: var(--team2-color); }
+        #round-status {
+            min-height: 28px;
+            margin: 8px 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+        #round-controls button {
+            margin: 4px;
+            padding: 8px 14px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        #scoreboard {
+            flex-wrap: wrap;
+        }
+        .score-box {
+            min-width: 150px;
+            transition: all 0.3s;
+        }
+        .score-box.active-pair {
+            border-color: #fff;
+            box-shadow: 0 0 18px var(--accent-gold);
+            background: rgba(255, 215, 0, 0.18);
+        }
+        #mini-scoreboard {
+            flex-wrap: wrap;
+            max-width: 60vw;
+            justify-content: flex-end;
+        }
+        #mini-scoreboard .mini-score-box.active-pair {
+            border-color: #fff;
+            box-shadow: 0 0 10px var(--accent-gold);
+            background: rgba(255, 215, 0, 0.3);
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.hidden {
+            display: none;
+        }
+        .modal-box {
+            background: var(--board-bg);
+            border: 3px solid var(--accent-gold);
+            border-radius: 15px;
+            padding: 30px 40px;
+            max-width: 600px;
+            width: 90%;
+        }
+        .modal-box h2 {
+            color: var(--accent-gold);
+            margin-top: 0;
+        }
+        .pair-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .pair-input-group input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
+            font-size: 1em;
+        }
+        .modal-box button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent-gold);
+            font-weight: bold;
+        }
+        #final-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #0d2b1f, #000);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s;
+        }
+        #final-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        #final-winner-text {
+            font-size: 4em;
+            color: var(--accent-gold);
+            text-shadow: 0 0 30px var(--accent-gold), 3px 3px 0 #000;
+            text-align: center;
+            z-index: 10;
+            padding: 0 20px;
+        }
+        #snow-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .snowflake {
+            position: absolute;
+            top: -10%;
+            color: white;
+            animation-name: snowfall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+        @keyframes snowfall {
+            0% { transform: translateY(-10vh) translateX(0); }
+            100% { transform: translateY(110vh) translateX(20px); }
+        }
+        #final-overlay button {
+            margin-top: 30px;
+            padding: 10px 24px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 8px;
+            border: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="setup-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2>🎄 Ονόματα Ομάδων 🎄</h2>
+            <p>Εισάγετε τα ονόματα των 6 ομάδων, ανά ζευγάρια. Κάθε ζευγάρι θα παίξει 8 ερωτήσεις.</p>
+            <div class="pair-input-group">
+                <input type="text" id="team-name-1" placeholder="Ζευγάρι 1 - Ομάδα Α" />
+                <input type="text" id="team-name-2" placeholder="Ζευγάρι 1 - Ομάδα Β" />
+            </div>
+            <div class="pair-input-group">
+                <input type="text" id="team-name-3" placeholder="Ζευγάρι 2 - Ομάδα Α" />
+                <input type="text" id="team-name-4" placeholder="Ζευγάρι 2 - Ομάδα Β" />
+            </div>
+            <div class="pair-input-group">
+                <input type="text" id="team-name-5" placeholder="Ζευγάρι 3 - Ομάδα Α" />
+                <input type="text" id="team-name-6" placeholder="Ζευγάρι 3 - Ομάδα Β" />
+            </div>
+            <button onclick="startGame()">Έναρξη Παιχνιδιού</button>
+        </div>
+    </div>
+
+    <div id="mini-scoreboard"></div>
+
+    <h1>🎄 Άκου τι είπαν τα Ξωτικά! 🎄</h1>
+    
+    <div id="controls">
+        <input type="file" id="csv-file" accept=".csv" />
+        <button onclick="prevQuestion()">&larr; Προηγούμενη</button>
+        <button onclick="nextQuestion()">Επόμενη &rarr;</button>
+        <button onclick="resetBuzzers()">Reset Buzzers (Space)</button>
+        <span class="info-text"> | Πλήκτρα: 1-5 (Αποκάλυψη), A (Ομάδα 1), L (Ομάδα 2), X (Λάθος: 1η απάντηση γύρου αλλάζει σειρά αμέσως, αλλιώς 3 Χ αλλάζουν σειρά)</span>
+    </div>
+
+    <div id="question-container">Φορτώστε το αρχείο CSV για να ξεκινήσετε...</div>
+
+    <div id="board">
+        <!-- Rows will be injected here by JS -->
+    </div>
+
+    <div id="teams-container">
+        <div id="team1" class="team-box"><span class="team-name">ΟΜΑΔΑ 1</span><br><small>(Πλήκτρο A)</small><span id="team1-strikes" class="strike-marks"></span></div>
+        <div id="team2" class="team-box"><span class="team-name">ΟΜΑΔΑ 2</span><br><small>(Πλήκτρο L)</small><span id="team2-strikes" class="strike-marks"></span></div>
+    </div>
+
+    <div id="scoreboard"></div>
+
+    <div id="round-status">Διεκδίκηση ελέγχου — ο πρώτος buzzer δίνει απάντηση</div>
+    <div id="round-controls">
+        <button onclick="awardRemainingToControl()">Τέλος γύρου — πόντοι στην ομάδα ελέγχου</button>
+        <button onclick="endRoundAndAdvance()">Επόμενος γύρος</button>
+        <button onclick="showFinalWinner()">Τελικό αποτέλεσμα</button>
+    </div>
+
+    <div id="strike-container">X</div>
+
+    <div id="final-overlay">
+        <div id="snow-container"></div>
+        <div id="final-winner-text"></div>
+        <button onclick="closeFinalOverlay()">Κλείσιμο</button>
+    </div>
+
+    <script>
+        // --- Team / Pair Configuration ---
+        let teamNames = ['ΟΜΑΔΑ 1', 'ΟΜΑΔΑ 2', 'ΟΜΑΔΑ 3', 'ΟΜΑΔΑ 4', 'ΟΜΑΔΑ 5', 'ΟΜΑΔΑ 6'];
+        const pairsDef = [[1, 2], [3, 4], [5, 6]];
+        const QUESTIONS_PER_MATCH = 8;
+        let currentPair = pairsDef[0];
+        let currentMatchIndex = 0;
+
+        let questionsData = [];
+        let currentQuestionIndex = 0;
+        let buzzerLocked = false;
+        let activeTeamId = null; // 1 = left of current pair, 2 = right of current pair
+        let teamStrikes = { 1: 0, 2: 0 };
+        let teamScores = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+        let roundPoints = 0;
+        let controlTeamId = null;
+        let roundPhase = 'waiting';
+        let controlSwitchedOnce = false;
+
+        // --- Setup Modal (team names) ---
+        function startGame() {
+            for (let i = 1; i <= 6; i++) {
+                const input = document.getElementById(`team-name-${i}`);
+                const val = input && input.value.trim();
+                teamNames[i - 1] = val ? val : `ΟΜΑΔΑ ${i}`;
+            }
+            document.getElementById('setup-modal').classList.add('hidden');
+            updateTeamLabels();
+        }
+
+        // --- Audio Context Synthesis for stand-alone SFX ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playDing() {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1);
+        }
+
+        function playStrike() {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5);
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function playBuzzer() {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        // --- File Handling & CSV Parsing ---
+        document.getElementById('csv-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                parseCSV(text);
+                if (questionsData.length > 0) {
+                    currentQuestionIndex = 0;
+                    renderQuestion();
+                    document.getElementById('csv-file').style.display = 'none';
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        function parseCSV(text) {
+            questionsData = [];
+            // Basic CSV parser (ignores commas inside quotes if basic)
+            const lines = text.replace(/^\uFEFF/, '').trim().split(/\r?\n/);
+            const parseLine = (line) => {
+                const cells = [];
+                let cur = '', inQ = false;
+                for (let k = 0; k < line.length; k++) {
+                    const c = line[k];
+                    if (inQ) {
+                        if (c === '"' && line[k+1] === '"') { cur += '"'; k++; }
+                        else if (c === '"') inQ = false;
+                        else cur += c;
+                    } else if (c === '"') inQ = true;
+                    else if (c === ',') { cells.push(cur.trim()); cur = ''; }
+                    else cur += c;
+                }
+                cells.push(cur.trim());
+                return cells;
+            };
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const row = parseLine(lines[i]);
+                
+                const q = {
+                    question: row[0],
+                    answers: []
+                };
+                // Up to 5 answers per question (columns: Q, A1, P1, A2, P2, ...)
+                for(let j=1; j<=9; j+=2) {
+                    if (row[j] && row[j] !== "" && row[j+1] && row[j+1] !== "0") {
+                        q.answers.push({ text: row[j], points: row[j+1], revealed: false });
+                    }
+                }
+                questionsData.push(q);
+            }
+        }
+
+        // --- Pair / Match Helpers ---
+        function toRealId(pos) {
+            return currentPair[pos - 1];
+        }
+
+        function updateMatchForQuestion(idx) {
+            currentMatchIndex = Math.min(Math.floor(idx / QUESTIONS_PER_MATCH), pairsDef.length - 1);
+            currentPair = pairsDef[currentMatchIndex];
+            updateTeamLabels();
+        }
+
+        function updateTeamLabels() {
+            const left = document.querySelector('#team1 .team-name');
+            const right = document.querySelector('#team2 .team-name');
+            if (left) left.textContent = teamNames[currentPair[0] - 1];
+            if (right) right.textContent = teamNames[currentPair[1] - 1];
+            renderScoreboards();
+        }
+
+        function renderScoreboards() {
+            const board = document.getElementById('scoreboard');
+            const mini = document.getElementById('mini-scoreboard');
+            board.innerHTML = '';
+            mini.innerHTML = '';
+            pairsDef.forEach((pair, pairIdx) => {
+                pair.forEach((teamId) => {
+                    const isActive = pairIdx === currentMatchIndex;
+
+                    const box = document.createElement('div');
+                    box.className = `score-box${isActive ? ' active-pair' : ''}`;
+                    box.innerHTML = `${teamNames[teamId - 1]}: <strong id="team${teamId}-score">${teamScores[teamId]}</strong>`;
+                    board.appendChild(box);
+
+                    const miniBox = document.createElement('div');
+                    miniBox.className = `mini-score-box${isActive ? ' active-pair' : ''}`;
+                    miniBox.innerHTML = `${teamNames[teamId - 1]}: <span id="mini-team${teamId}-score">${teamScores[teamId]}</span>`;
+                    mini.appendChild(miniBox);
+                });
+            });
+        }
+
+        function renderQuestion() {
+            if (questionsData.length === 0) return;
+            updateMatchForQuestion(currentQuestionIndex);
+            const q = questionsData[currentQuestionIndex];
+            document.getElementById('question-container').innerText = q.question;
+            
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            
+            q.answers.forEach((ans, index) => {
+                const row = document.createElement('div');
+                row.className = `answer-row ${ans.revealed ? '' : 'hidden-content'}`;
+                row.id = `ans-row-${index}`;
+                
+                row.innerHTML = `
+                    <div class="number-box">${index + 1}</div>
+                    <div class="text-box">${ans.text}</div>
+                    <div class="points-box">${ans.points}</div>
+                `;
+                
+                // Click to reveal
+                row.addEventListener('click', () => revealAnswer(index));
+                board.appendChild(row);
+            });
+            resetBuzzers();
+            resetStrikes();
+            roundPoints = 0;
+            controlTeamId = null;
+            roundPhase = 'waiting';
+            controlSwitchedOnce = false;
+            setRoundStatus(`Ζευγάρι ${currentMatchIndex + 1}: ${teamNames[currentPair[0] - 1]} εναντίον ${teamNames[currentPair[1] - 1]} — Ο πρώτος buzzer απαντά`);
+        }
+
+        function revealAnswer(index) {
+            const q = questionsData[currentQuestionIndex];
+            if (!q || !q.answers[index] || q.answers[index].revealed) return;
+            if (roundPhase !== 'play' || controlTeamId === null) return;
+
+            const ans = q.answers[index];
+            ans.revealed = true;
+            const row = document.getElementById(`ans-row-${index}`);
+            row.classList.remove('hidden-content');
+            playDing();
+
+            const points = parseInt(ans.points, 10) || 0;
+            roundPoints += points;
+            setRoundStatus(`Έλεγχος: ${teamNames[toRealId(controlTeamId) - 1]} — πόντοι γύρου: ${roundPoints}`);
+            if (q.answers.every(answer => answer.revealed)) {
+                awardRound(controlTeamId);
+            }
+        }
+
+        function showStrike() {
+            playStrike();
+            const strikeEl = document.getElementById('strike-container');
+            strikeEl.style.display = 'block';
+            setTimeout(() => { strikeEl.style.display = 'none'; }, 1000);
+
+            if (roundPhase !== 'play' || controlTeamId === null) return;
+
+            // Special case: the very first wrong answer of the round (before any
+            // correct answer or strike has happened) switches control immediately
+            // and does NOT count towards the 3-strike limit.
+            const isVeryFirstActionOfRound = !controlSwitchedOnce && roundPoints === 0 && teamStrikes[controlTeamId] === 0;
+
+            if (isVeryFirstActionOfRound) {
+                const otherTeamId = controlTeamId === 1 ? 2 : 1;
+                controlSwitchedOnce = true;
+                switchControlTo(otherTeamId, `Λάθος απάντηση! Αλλάζει σειρά. Έλεγχος: ${teamNames[toRealId(otherTeamId) - 1]}.`);
+                return;
+            }
+
+            teamStrikes[controlTeamId]++;
+            updateStrikeMarks();
+
+            if (teamStrikes[controlTeamId] >= 3) {
+                if (controlSwitchedOnce) {
+                    // The second team to have control also struck out — split the round's points.
+                    splitRoundPoints();
+                } else {
+                    const otherTeamId = controlTeamId === 1 ? 2 : 1;
+                    controlSwitchedOnce = true;
+                    switchControlTo(otherTeamId, `3ο λάθος! Αλλάζει σειρά. Έλεγχος: ${teamNames[toRealId(otherTeamId) - 1]}.`);
+                }
+            }
+        }
+
+        function switchControlTo(otherTeamId, statusMessage) {
+            controlTeamId = otherTeamId;
+            activeTeamId = otherTeamId;
+            teamStrikes = { 1: 0, 2: 0 };
+            updateStrikeMarks();
+            buzzerLocked = true;
+
+            document.getElementById('team1').classList.remove('team-active');
+            document.getElementById('team2').classList.remove('team-active');
+            document.getElementById(`team${otherTeamId}`).classList.add('team-active');
+            setRoundStatus(statusMessage);
+        }
+
+        function splitRoundPoints() {
+            const idA = toRealId(1);
+            const idB = toRealId(2);
+            const half = Math.floor(roundPoints / 2);
+            const remainder = roundPoints - half * 2;
+            teamScores[idA] += half + remainder;
+            teamScores[idB] += half;
+            roundPhase = 'round-end';
+            buzzerLocked = true;
+            updateScores();
+            setRoundStatus(`Και οι δύο ομάδες έκαναν 3 λάθη! Οι ${roundPoints} πόντοι μοιράζονται μεταξύ ${teamNames[idA - 1]} και ${teamNames[idB - 1]}.`);
+            roundPoints = 0;
+            maybeShowFinalResults();
+        }
+
+        function awardRound(pos) {
+            if (pos === null) return;
+            const realId = toRealId(pos);
+            teamScores[realId] += roundPoints;
+            roundPhase = 'round-end';
+            buzzerLocked = true;
+            updateScores();
+            setRoundStatus(`Ο γύρος τελείωσε. Η ${teamNames[realId - 1]} κέρδισε ${roundPoints} πόντους.`);
+            roundPoints = 0;
+            maybeShowFinalResults();
+        }
+
+        function maybeShowFinalResults() {
+            const isLastQuestionOfMatch = ((currentQuestionIndex + 1) % QUESTIONS_PER_MATCH === 0);
+            const isLastMatch = currentMatchIndex === pairsDef.length - 1;
+            const isLastAvailableQuestion = currentQuestionIndex === questionsData.length - 1;
+            if (isLastMatch && (isLastQuestionOfMatch || isLastAvailableQuestion)) {
+                setTimeout(() => showFinalWinner(), 1200);
+            }
+        }
+
+        function awardRemainingToControl() {
+            if (roundPhase === 'play' && controlTeamId !== null) {
+                awardRound(controlTeamId);
+            }
+        }
+
+        function endRoundAndAdvance() {
+            if (roundPhase !== 'round-end') {
+                if (controlTeamId !== null && roundPoints > 0) awardRound(controlTeamId);
+            }
+            nextQuestion();
+        }
+
+        function setRoundStatus(text) {
+            document.getElementById('round-status').textContent = text;
+        }
+
+        function updateScores() {
+            for (let id = 1; id <= 6; id++) {
+                const el = document.getElementById(`team${id}-score`);
+                const miniEl = document.getElementById(`mini-team${id}-score`);
+                if (el) el.textContent = teamScores[id];
+                if (miniEl) miniEl.textContent = teamScores[id];
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        // --- Buzzer Logic ---
+        function activateBuzzer(teamId) {
+            if (buzzerLocked || roundPhase !== 'waiting') return;
+            buzzerLocked = true;
+            playBuzzer();
+            
+            document.getElementById('team1').classList.remove('team-active');
+            document.getElementById('team2').classList.remove('team-active');
+            
+            document.getElementById(`team${teamId}`).classList.add('team-active');
+            activeTeamId = teamId;
+            controlTeamId = teamId;
+            roundPhase = 'play';
+            setRoundStatus(`Έλεγχος: ${teamNames[toRealId(teamId) - 1]}.`);
+        }
+
+        function resetBuzzers() {
+            buzzerLocked = false;
+            activeTeamId = null;
+            document.getElementById('team1').classList.remove('team-active');
+            document.getElementById('team2').classList.remove('team-active');
+        }
+
+        function resetStrikes() {
+            teamStrikes = { 1: 0, 2: 0 };
+            document.getElementById('team1-strikes').innerText = '';
+            document.getElementById('team2-strikes').innerText = '';
+        }
+
+        function updateStrikeMarks() {
+            document.getElementById('team1-strikes').innerText = '✖'.repeat(teamStrikes[1]);
+            document.getElementById('team2-strikes').innerText = '✖'.repeat(teamStrikes[2]);
+        }
+
+        function showFinalWinner() {
+            const maxScore = Math.max(...Object.values(teamScores));
+            const winners = Object.keys(teamScores)
+                .filter(id => teamScores[id] === maxScore)
+                .map(id => teamNames[id - 1]);
+            const text = winners.length > 1
+                ? `Ισοπαλία: ${winners.join(' & ')} (${maxScore} πόντοι)`
+                : `Νικήτρια Ομάδα: ${winners[0]}! (${maxScore} πόντοι)`;
+            document.getElementById('final-winner-text').textContent = text;
+            document.getElementById('final-overlay').classList.add('show');
+            generateSnow();
+        }
+
+        function closeFinalOverlay() {
+            document.getElementById('final-overlay').classList.remove('show');
+        }
+
+        function generateSnow() {
+            const container = document.getElementById('snow-container');
+            if (container.childElementCount > 0) return; // already generated
+            const flakeCount = 60;
+            for (let i = 0; i < flakeCount; i++) {
+                const flake = document.createElement('span');
+                flake.className = 'snowflake';
+                flake.textContent = '❄';
+                flake.style.left = Math.random() * 100 + 'vw';
+                flake.style.animationDuration = (5 + Math.random() * 8) + 's';
+                flake.style.animationDelay = (Math.random() * 5) + 's';
+                flake.style.fontSize = (0.8 + Math.random() * 1.5) + 'em';
+                flake.style.opacity = (0.5 + Math.random() * 0.5);
+                container.appendChild(flake);
+            }
+        }
+
+        // --- Keyboard Listeners ---
+        document.addEventListener('keydown', (e) => {
+            // Numbers 1-5 for revealing answers
+            if (e.key >= '1' && e.key <= '5') {
+                const index = parseInt(e.key) - 1;
+                revealAnswer(index);
+            }
+            // 'a' or 'A' for left team of current pair
+            if (e.key.toLowerCase() === 'a') {
+                activateBuzzer(1);
+            }
+            // 'l' or 'L' for right team of current pair
+            if (e.key.toLowerCase() === 'l') {
+                activateBuzzer(2);
+            }
+            // Space to reset buzzers
+            if (e.code === 'Space') {
+                e.preventDefault();
+                resetBuzzers();
+            }
+            // 'x' or 'X' for Strike
+            if (e.key.toLowerCase() === 'x') {
+                showStrike();
+            }
+            // Arrows for navigation
+            if (e.key === 'ArrowRight') nextQuestion();
+            if (e.key === 'ArrowLeft') prevQuestion();
+        });
+
+        renderScoreboards();
+    </script>
+</body>
+</html>
