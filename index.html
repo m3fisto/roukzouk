@@ -21,6 +21,9 @@
             margin: 0;
             padding: 20px;
             overflow: hidden;
+            height: 100vh;
+            min-height: 620px;
+            box-sizing: border-box;
         }
         h1 {
             color: var(--accent-gold);
@@ -39,6 +42,9 @@
             margin: 20px 0;
             min-height: 80px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #board {
             display: flex;
@@ -317,6 +323,185 @@
             border-radius: 8px;
             border: none;
             z-index: 10;
+        }
+
+        /* Responsive / presentation mode for projectors and low-height screens */
+        @media (max-height: 760px), (max-width: 1280px) {
+            body {
+                padding: 8px 12px;
+                min-height: 620px;
+            }
+
+            h1 {
+                font-size: clamp(1.35rem, 3vh, 2rem);
+                margin: 4px 0;
+            }
+
+            #controls {
+                margin-bottom: 6px;
+                padding: 5px 8px;
+            }
+
+            #controls button,
+            #round-controls button {
+                margin: 2px;
+                padding: 5px 8px;
+                font-size: 0.82rem;
+            }
+
+            .info-text {
+                display: inline-block;
+                font-size: 0.72rem;
+                margin-top: 2px;
+            }
+
+            #question-container {
+                font-size: clamp(1.05rem, 3.1vh, 1.5rem);
+                min-height: 38px;
+                margin: 6px 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #board {
+                gap: 5px;
+                margin-bottom: 8px;
+            }
+
+            .answer-row {
+                height: clamp(38px, 6vh, 48px);
+                width: min(82%, 820px);
+                border-width: 2px;
+            }
+
+            .number-box {
+                width: 48px;
+                font-size: 1.25rem;
+            }
+
+            .text-box {
+                padding: 0 12px;
+                font-size: clamp(0.9rem, 2.2vh, 1.15rem);
+            }
+
+            .points-box {
+                width: 60px;
+                font-size: 1.25rem;
+            }
+
+            #teams-container {
+                margin-top: 6px;
+            }
+
+            .team-box {
+                padding: 7px 18px;
+                font-size: clamp(1.05rem, 2.8vh, 1.45rem);
+                border-width: 3px;
+            }
+
+            .team-box small {
+                font-size: 0.62em;
+            }
+
+            .strike-marks {
+                min-height: 16px;
+                margin-top: 3px;
+                font-size: 0.65em;
+            }
+
+            #scoreboard {
+                gap: 6px;
+                margin: 5px 0;
+            }
+
+            .score-box {
+                min-width: 105px;
+                padding: 5px 8px;
+                border-width: 1px;
+                font-size: 0.78rem;
+            }
+
+            #mini-scoreboard {
+                top: 6px;
+                right: 6px;
+                max-width: 58vw;
+                gap: 4px;
+            }
+
+            #mini-scoreboard .mini-score-box {
+                padding: 4px 7px;
+                font-size: 0.68rem;
+            }
+
+            #round-status {
+                min-height: 18px;
+                margin: 3px 0;
+                font-size: 0.82rem;
+            }
+
+            #round-controls {
+                margin-bottom: 2px;
+            }
+
+            .modal-box {
+                padding: 18px 24px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .pair-input-group {
+                margin-bottom: 7px;
+            }
+
+            .modal-box h2 {
+                margin-bottom: 8px;
+            }
+
+            .modal-box button {
+                padding: 7px 14px;
+                font-size: 0.95rem;
+            }
+
+            #final-winner-text {
+                font-size: clamp(2rem, 7vw, 4rem);
+            }
+        }
+
+        @media (max-height: 650px) {
+            h1 {
+                display: none;
+            }
+
+            #controls {
+                margin-bottom: 3px;
+            }
+
+            #question-container {
+                min-height: 32px;
+                margin: 3px 0;
+            }
+
+            .answer-row {
+                height: 36px;
+            }
+
+            #board {
+                gap: 3px;
+                margin-bottom: 4px;
+            }
+
+            #teams-container {
+                margin-top: 3px;
+            }
+
+            .team-box {
+                padding: 5px 14px;
+            }
+
+            #scoreboard {
+                margin: 3px 0;
+            }
         }
     </style>
 </head>

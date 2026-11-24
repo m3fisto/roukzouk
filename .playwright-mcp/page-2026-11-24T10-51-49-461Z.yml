@@ -1,0 +1,58 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - heading "🎄 Ονόματα Ομάδων 🎄" [level=2] [ref=e4]
+    - paragraph [ref=e5]: Εισάγετε τα ονόματα των 6 ομάδων, ανά ζευγάρια. Κάθε ζευγάρι θα παίξει 8 ερωτήσεις.
+    - generic [ref=e6]:
+      - textbox "Ζευγάρι 1 - Ομάδα Α" [ref=e7]
+      - textbox "Ζευγάρι 1 - Ομάδα Β" [ref=e8]
+    - generic [ref=e9]:
+      - textbox "Ζευγάρι 2 - Ομάδα Α" [ref=e10]
+      - textbox "Ζευγάρι 2 - Ομάδα Β" [ref=e11]
+    - generic [ref=e12]:
+      - textbox "Ζευγάρι 3 - Ομάδα Α" [ref=e13]
+      - textbox "Ζευγάρι 3 - Ομάδα Β" [ref=e14]
+    - button "Έναρξη Παιχνιδιού" [ref=e15] [cursor=pointer]
+  - generic [ref=e16]:
+    - generic [ref=e17]: "ΟΜΑΔΑ 1: 0"
+    - generic [ref=e18]: "ΟΜΑΔΑ 2: 0"
+    - generic [ref=e19]: "ΟΜΑΔΑ 3: 0"
+    - generic [ref=e20]: "ΟΜΑΔΑ 4: 0"
+    - generic [ref=e21]: "ΟΜΑΔΑ 5: 0"
+    - generic [ref=e22]: "ΟΜΑΔΑ 6: 0"
+  - heading "🎄 Άκου τι είπαν τα Ξωτικά! 🎄" [level=1] [ref=e23]
+  - generic [ref=e24]:
+    - button "Choose File" [ref=e25]
+    - button "← Προηγούμενη" [ref=e26]
+    - button "Επόμενη →" [ref=e27]
+    - button "Reset Buzzers (Space)" [ref=e28]
+    - generic [ref=e29]: "| Πλήκτρα: 1-5 (Αποκάλυψη), A (Ομάδα 1), L (Ομάδα 2), X (Λάθος: 1η απάντηση γύρου αλλάζει σειρά αμέσως, αλλιώς 3 Χ αλλάζουν σειρά)"
+  - generic [ref=e30]: Φορτώστε το αρχείο CSV για να ξεκινήσετε...
+  - generic [ref=e31]:
+    - generic [ref=e32]: ΟΜΑΔΑ 1(Πλήκτρο A)
+    - generic [ref=e34]: ΟΜΑΔΑ 2(Πλήκτρο L)
+  - generic [ref=e36]:
+    - generic [ref=e37]:
+      - text: "ΟΜΑΔΑ 1:"
+      - strong [ref=e38]: "0"
+    - generic [ref=e39]:
+      - text: "ΟΜΑΔΑ 2:"
+      - strong [ref=e40]: "0"
+    - generic [ref=e41]:
+      - text: "ΟΜΑΔΑ 3:"
+      - strong [ref=e42]: "0"
+    - generic [ref=e43]:
+      - text: "ΟΜΑΔΑ 4:"
+      - strong [ref=e44]: "0"
+    - generic [ref=e45]:
+      - text: "ΟΜΑΔΑ 5:"
+      - strong [ref=e46]: "0"
+    - generic [ref=e47]:
+      - text: "ΟΜΑΔΑ 6:"
+      - strong [ref=e48]: "0"
+  - generic [ref=e49]: Διεκδίκηση ελέγχου — ο πρώτος buzzer δίνει απάντηση
+  - generic [ref=e50]:
+    - button "Τέλος γύρου — πόντοι στην ομάδα ελέγχου" [ref=e51] [cursor=pointer]
+    - button "Επόμενος γύρος" [ref=e52] [cursor=pointer]
+    - button "Τελικό αποτέλεσμα" [ref=e53] [cursor=pointer]
+  - generic:
+    - button "Κλείσιμο"
